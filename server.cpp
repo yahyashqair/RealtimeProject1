@@ -10,6 +10,14 @@
 #include <thread>
 #include <arpa/inet.h>
 #include <bits/stdc++.h>
+#define all(v) (v).begin(), (v).end()
+#define lp(i, n) for (int i = 0; i < (n) ; ++i)
+#define lpp(i, n) for (int i = 1; i <= (n) ; ++i)
+#define lpi(i, j, n)    for(int i=(j);i<(int)(n);++i)
+#define lpd(i, j, n)    for(int i=(j);i>=(int)(n);--i)
+#define sz(v) (int)(v).size()
+#define clr(v, d)       memset(v, d, sizeof(v))
+#define mod 100000007
 
 using namespace std;
 #define PORT 8000
@@ -72,7 +80,7 @@ void requestHandler(void* data) {
     read( new_socket , buffer, 1024);
     int msgType = atoi(buffer);
     cout << "msg Type is " << msgType << endl;
-	send(new_socket , success , strlen(success) , 0 ); 
+	//send(new_socket , success , strlen(success) , 0 ); 
 	
     if (msgType == 1) { // LOCK REQUEST 
 		
@@ -84,10 +92,44 @@ void requestHandler(void* data) {
 			cout << "Fail Locked " << id << endl;
 			send(new_socket , failed , strlen(failed) , 0 ); 
 		}
-		
+		return ;
     } else if (msgType == 2) {
-    } else if (msgType == 3) {
-    } else if (msgType == 4) {
+		if(memories[memoId].lockedBy == id){
+			cout << "Success UNLOCKED " << id << endl;
+			memories[memoId].lockedBy = -1 ; 
+			send(new_socket , success , strlen(success) , 0 ); 
+		}else{
+			cout << "Fail Unlocked " << id << endl;
+			send(new_socket , failed , strlen(failed) , 0 ); 
+		}
+		return ;
+		
+    } else if (msgType == 3) { // Read  
+		
+		if(memories[memoId].lockedBy == id){
+			char res[1000] ; 
+			lp(i,memories[memoId].memo.size()){res[i]=memories[memoId].memo[i];res[i+1]='\0';}
+			send(new_socket , res , strlen(res) , 0 ); 
+		}else{
+			cout << "Fail Read by " << id << endl;
+			send(new_socket , failed , strlen(failed) , 0 ); 
+		}
+		return ;
+		
+    } else if (msgType == 4) { // Write 
+		
+		if(memories[memoId].lockedBy == id){
+			char res[1024] ; 
+			read( new_socket , res, 1024);
+			string s(res);
+			memories[memoId].memo=s;
+			cout << s << endl ;
+			send(new_socket , success , strlen(success) , 0 ); 
+		}else{
+			cout << "Fail Write by " << id << endl;
+			send(new_socket , failed , strlen(failed) , 0 ); 
+		}
+		return ;
     } else if (msgType == 5) {
     } else if (msgType == 6) {
     }
