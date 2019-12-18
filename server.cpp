@@ -8,6 +8,8 @@
 #include <string.h>
 #include <pthread.h>
 #include <thread>
+#include <arpa/inet.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 #define PORT 8000
@@ -16,37 +18,50 @@ using namespace std;
 // DataStucture for Sheard Memoreis
 
 typedef struct {
-	// to store the contant as string 
-	string memo ; 
-	// to know client make lock 
-	int lockedBy ;
-	// dynamic memory to store clients sheards this memory 
-	set<int> sheardBy;
-	}memory ;
-// dynamic array [ key - > value ] to store the memores 
-map<int,memory>memorys ; 
+    // to store the contant as string
+    string memo ;
+    // to know client make lock
+    int lockedBy ;
+    // dynamic memory to store clients sheards this memory
+    set<int> sheardBy;
+}memory ;
+// dynamic array [ key - > value ] to store the memores
+map<int,memory>memorys ;
 
 // End
-   
+
 
 
 
 void requestHandler(void* data){
     int new_socket = *((int*)data) ;
     char buffer[1024] = {0};
-    char hello[] = "Hello from client";
+    
+    // Get User Id And Sheard Memory Id ..
+    read( new_socket , buffer, 1024);
+    int id = atoi(buffer);
+    int  i  ;
+    for ( i = 0; i < strlen(buffer); ++i) {
+        if(buffer[i]==':'){
+            i++;
+            break;
+        }
+    }
+    int memoId = atoi(buffer+i);
+    cout << id << " ID " << memoId << " request type "<<endl;
+	
+	//Get Msg Type
+    read( new_socket , buffer, 1024);
+    int msgType = atoi(buffer);
+    cout << "msg Type is " << msgType << endl;
 
-    int valread = read( new_socket , buffer, 1024);
-    printf("%s\n",buffer );
-    send(new_socket , hello , strlen(hello) , 0 );
-    printf("Hello message sent\n");
-
+    
 }
 
 int main()
 {
-    int server_fd, new_socket, valread;
-    struct sockaddr_in address;
+    int server_fd, new_socket ;
+    struct sockaddr_in address,peer_addr;
     int opt = 1;
     int addrlen = sizeof(address);
 
@@ -81,19 +96,16 @@ int main()
     }
 
     while(1){
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&peer_addr,
                                  (socklen_t*)&addrlen))<0)
         {
             perror("accept");
             exit(EXIT_FAILURE);
         }
-        int a=new_socket;
-        //void *requestHandler();
+        // Get IP Address for client
+        //
         pthread_t  p_thread;
         pthread_create(&p_thread, NULL, reinterpret_cast<void *(*)(void *)>(requestHandler), (void*)&new_socket);
-        /*
-        std::thread second (requestHandler,new_socket);  // spawn new thread that calls bar(0)
-		*/
     }
     return 0;
 }
