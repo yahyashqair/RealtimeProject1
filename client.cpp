@@ -16,21 +16,6 @@ using namespace std;
 #define PORT 8000 
 
 
-// DataStucture for Sheard Memoreis
-
-typedef struct {
-	// to store the contant as string 
-	string memo ; 
-	// to know client make lock 
-	int lockedBy ;
-	// dynamic memory to store clients sheards this memory 
-	set<int> sheardBy;
-	}memory ;
-// dynamic array [ key - > value ] to store the memores 
-map<int,memory>memorys ; 
-
-// End
-   
 int main() 
 { 
     int sock = 0, valread; 
