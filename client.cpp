@@ -20,8 +20,8 @@ int main()
 { 
     int sock = 0, valread; 
     struct sockaddr_in serv_addr; 
-    char hello[] = "10:3:"; 
-    char type[] = "4:"; 
+    char hello[] = "9:3:"; 
+    char type[] = "1:"; 
 
     char buffer[1024] = {0}; 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
@@ -46,9 +46,14 @@ int main()
         return -1; 
     } 
     send(sock , hello , strlen(hello) , 0 ); 
+    read( sock , buffer, 1024); 
+	if(atoi(buffer)!=1){
+		cout << "error" << endl;
+	}else{
+	cout << "yes"<<endl;	
+	}
 	send(sock , type , strlen(type) , 0 ); 
-	cout << "Hello message sent" <<  endl;
-    valread = read( sock , buffer, 1024); 
-    printf("%s\n",buffer ); 
+	read( sock , buffer, 1024); 
+	printf("%s\n",buffer ); 
     return 0; 
 } 
