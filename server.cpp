@@ -44,8 +44,8 @@ map<int, memory>memories ;
 void requestHandler(void* data) {
     int new_socket = *((int*)data) ;
     char buffer[1024] = {0};
-	char success[] ="1";
-	char failed[] ="0";
+	char success[] ="1:";
+	char failed[] ="0:";
 	
     // Get User Id And Sheard Memory Id ..
     read( new_socket , buffer, 1024);
@@ -119,6 +119,8 @@ void requestHandler(void* data) {
     } else if (msgType == 4) { // Write 
 		
 		if(memories[memoId].lockedBy == id){
+			send(new_socket , success , strlen(success) , 0 );    
+			//read( new_socket , buffer, 1024);
 			char res[1024] ; 
 			read( new_socket , res, 1024);
 			string s(res);

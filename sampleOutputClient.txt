@@ -1,0 +1,64 @@
+Please Enter Client ID : 3
+
+Please Enter sheard Memory you want to access : 2
+
+Enter type of you Request : 
+1- Lock 
+2- unLock 
+3- Read 
+4- Write 
+1
+3:2:
+Connected ...
+Locked Successfully 
+
+Enter type of you Request : 
+1- Lock 
+2- unLock 
+3- Read 
+4- Write 
+4
+3:2:
+Connected ...
+Print the msg you want to sent 
+yahyashqair
+written Successfully 
+
+Enter type of you Request : 
+1- Lock 
+2- unLock 
+3- Read 
+4- Write 
+3
+3:2:
+Connected ...
+yahyashqair
+Read Successfully 
+
+Enter type of you Request : 
+1- Lock 
+2- unLock 
+3- Read 
+4- Write 
+2
+3:2:
+Connected ...
+Unlocked Successfully 
+
+Enter type of you Request : 
+1- Lock 
+2- unLock 
+3- Read 
+4- Write 
+3
+3:2:
+Connected ...
+You must lock before read 
+
+Enter type of you Request : 
+1- Lock 
+2- unLock 
+3- Read 
+4- Write 
+
+
