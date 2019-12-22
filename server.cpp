@@ -18,7 +18,6 @@
 #define sz(v) (int)(v).size()
 #define clr(v, d)       memset(v, d, sizeof(v))
 #define mod 100000007
-
 using namespace std;
 #define PORT 8000
 
@@ -132,8 +131,12 @@ void requestHandler(void* data) {
 			send(new_socket , failed , strlen(failed) , 0 ); 
 		}
 		return ;
-    } else if (msgType == 5) {
-    } else if (msgType == 6) {
+    } else if (msgType == 5) { // handeld by client side
+    } else if (msgType == 6) { // Remove client id from memory clients list 
+		memories[memoId].sheardBy.erase(id);
+		if(memories[memoId].sheardBy.size()==0){
+			memories.erase(memoId);
+		}
     }
 
 

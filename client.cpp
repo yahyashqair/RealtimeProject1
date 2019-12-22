@@ -146,8 +146,10 @@ int makeRequest() {
 int main()
 {
     while (1) {
+        readId :
         cout << "Please Enter Client ID : ";
         cin >> cID ;
+        readMID:
         cout << endl << "Please Enter sheard Memory you want to access : ";
         cin >> msgID ;
         while (1) {
@@ -156,6 +158,8 @@ int main()
             cout << "2- unLock " << endl;
             cout << "3- Read " << endl;
             cout << "4- Write " << endl;
+            cout << "5- Change msg id " << endl;
+            cout << "6- Change Client session " << endl;
             int type ; cin >> type ;
             if (type == 1) {
 				lock();
@@ -165,9 +169,13 @@ int main()
 				read();
             } else if (type == 4 ) {
 				write();
-            } else {
-                cout << "These option not implemeted yet ." << endl;
-            }
+            } else if(type == 5){
+				goto readMID;
+            }else if (type == 6 ){
+				goto readId;
+			}else{
+				 cout << "These option not implemeted yet ." << endl;
+				}
         }
     }
     return 0;
