@@ -155,6 +155,7 @@ void requestHandler(void* data) {
         if (memories[memoId].sheardBy.size() == 0) {
             memories.erase(memoId);
         }
+         send(new_socket , success , strlen(success) , 0 );
     }
 
 

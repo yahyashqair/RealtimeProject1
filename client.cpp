@@ -60,6 +60,22 @@ void unlock() {
     cout << "Unlocked Successfully " << endl;
 }
 
+void remove() {
+    char type[] = "6:";
+    char buffer[1024] = {0};
+    int sock = makeRequest();
+    int ready = 0 ;
+    // loop is not important but 
+    send(sock , type , strlen(type) , 0 );
+    read( sock , buffer, 1024);
+    ready = atoi(buffer);
+	if(ready != 1){
+	cout << " Fail "<<endl;
+	return ; 
+	} 
+    cout << "Removed Successfully " << endl;
+}
+
 void read() {
     char type[] = "3:";
     char buffer[1024];
@@ -177,6 +193,7 @@ readMID:
             cout << "4- Write " << endl;
             cout << "5- Change msg id " << endl;
             cout << "6- Change Client session " << endl;
+            cout << "7- Remove me from msg client list " << endl;
             int type ; cin >> type ;
             if (type == 1) {
                 lock();
@@ -190,7 +207,10 @@ readMID:
                 goto readMID;
             } else if (type == 6 ) {
                 goto readId;
-            } else {
+            }else if(type == 7){
+				remove();
+				goto readMID ; 
+			} else {
                 cout << "this option not implemeted yet ." << endl;
             }
         }
