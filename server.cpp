@@ -1,5 +1,7 @@
-// Server side C/C++ program to demonstrate Socket programming
-//#include <bits/stdc++.h>
+
+
+// Header File and some macros which helped me in my code
+
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -23,7 +25,6 @@ using namespace std;
 
 
 // DataStucture for Sheard Memoreis
-
 typedef struct {
     // to store the contant as string
     string memo ;
@@ -35,17 +36,17 @@ typedef struct {
 // dynamic array [ key - > value ] to store the memores
 map<int, memory>memories ;
 
-// End
 
 
-
-
+// Function handle The request and make new sesstion with new client
+// Or Old client
 void requestHandler(void* data) {
     int new_socket = *((int*)data) ;
     char buffer[1024] = {0};
-	char success[] ="1:";
-	char failed[] ="0:";
-	
+    // some messages to make acknowledge for the request is accepted or not
+    char success[] = "1:";
+    char failed[] = "0:";
+
     // Get User Id And Sheard Memory Id ..
     read( new_socket , buffer, 1024);
     int id = atoi(buffer);
@@ -56,11 +57,12 @@ void requestHandler(void* data) {
             break;
         }
     }
+
     int memoId = atoi(buffer + i);
     cout << id << " ID " << memoId << " request type " << endl;
-	send(new_socket , success , strlen(success) , 0 ); 
-	
-	/*
+    send(new_socket , success , strlen(success) , 0 );
+
+    /*
      * The client sends the shared memory key (int) to server, if memory already exist
     the client will be added to that memory list of clients, otherwise the memory is
     allocated first
@@ -70,77 +72,93 @@ void requestHandler(void* data) {
         a.memo = "Empty";
         a.lockedBy = -1 ;
         a.sheardBy.insert(id);
-        memories[memoId]=a;
+        memories[memoId] = a;
     } else {
         memories[memoId].sheardBy.insert(id) ;
     }
-	
+
     //Get Msg Type { 1 , 2  ,3,  4 ,5 , 6  } .
     read( new_socket , buffer, 1024);
     int msgType = atoi(buffer);
     cout << "msg Type is " << msgType << endl;
-	//send(new_socket , success , strlen(success) , 0 ); 
-	
-    if (msgType == 1) { // LOCK REQUEST 
-		
-		if(memories[memoId].lockedBy == -1||memories[memoId].lockedBy == id){
-			cout << "Locked by " << id << endl;
-			memories[memoId].lockedBy = id ; 
-			send(new_socket , success , strlen(success) , 0 ); 
-		}else{
-			cout << "Fail Locked " << id << endl;
-			send(new_socket , failed , strlen(failed) , 0 ); 
-		}
-		return ;
+    //send(new_socket , success , strlen(success) , 0 );
+
+    if (msgType == 1) { // LOCK REQUEST
+
+        if (memories[memoId].lockedBy == -1 || memories[memoId].lockedBy == id) {
+            cout << "Locked by " << id << endl;
+            memories[memoId].lockedBy = id ;
+            send(new_socket , success , strlen(success) , 0 );
+        } else {
+			while(memories[memoId].lockedBy != -1){
+				;
+			}
+			memories[memoId].lockedBy= id ;
+            cout << "Locked by " << id << endl;
+            send(new_socket , success , strlen(success) , 0 );
+        }
+        return ;
     } else if (msgType == 2) {
-		if(memories[memoId].lockedBy == id){
-			cout << "Success UNLOCKED " << id << endl;
-			memories[memoId].lockedBy = -1 ; 
-			send(new_socket , success , strlen(success) , 0 ); 
-		}else{
-			cout << "Fail Unlocked " << id << endl;
-			send(new_socket , failed , strlen(failed) , 0 ); 
-		}
-		return ;
-		
-    } else if (msgType == 3) { // Read  
-		
-		if(memories[memoId].lockedBy == id){
-			char res[1000] ; 
-			lp(i,memories[memoId].memo.size()){res[i]=memories[memoId].memo[i];res[i+1]='\0';}
-			send(new_socket , res , strlen(res) , 0 ); 
-		}else{
-			cout << "Fail Read by " << id << endl;
-			send(new_socket , failed , strlen(failed) , 0 ); 
-		}
-		return ;
-		
-    } else if (msgType == 4) { // Write 
-		
-		if(memories[memoId].lockedBy == id){
-			send(new_socket , success , strlen(success) , 0 );    
-			//read( new_socket , buffer, 1024);
-			char res[1024] ; 
-			read( new_socket , res, 1024);
-			string s(res);
-			memories[memoId].memo=s;
-			cout << s << endl ;
-			send(new_socket , success , strlen(success) , 0 ); 
-		}else{
-			cout << "Fail Write by " << id << endl;
-			send(new_socket , failed , strlen(failed) , 0 ); 
-		}
-		return ;
-    } else if (msgType == 5) { // handeld by client side
-    } else if (msgType == 6) { // Remove client id from memory clients list 
-		memories[memoId].sheardBy.erase(id);
-		if(memories[memoId].sheardBy.size()==0){
-			memories.erase(memoId);
-		}
+        if (memories[memoId].lockedBy == id) {
+            cout << "Success UNLOCKED " << id << endl;
+            memories[memoId].lockedBy = -1 ;
+            send(new_socket , success , strlen(success) , 0 );
+        } else {
+            cout << "Fail Unlocked " << id << endl;
+            send(new_socket , failed , strlen(failed) , 0 );
+        }
+        return ;
+
+    } else if (msgType == 3) { // Read
+
+        if (memories[memoId].lockedBy == id) {
+            char res[1000] ;
+            lp(i, memories[memoId].memo.size()) {res[i] = memories[memoId].memo[i]; res[i + 1] = '\0';}
+            send(new_socket , res , strlen(res) , 0 );
+        } else {
+            cout << "Fail Read by " << id << endl;
+            send(new_socket , failed , strlen(failed) , 0 );
+        }
+        return ;
+
+    } else if (msgType == 4) { // Write
+
+        if (memories[memoId].lockedBy == id) {
+            send(new_socket , success , strlen(success) , 0 );
+            //read( new_socket , buffer, 1024);
+            char res[1024] ;
+            read( new_socket , res, 1024);
+            string s(res);
+            memories[memoId].memo = s;
+            cout << s << endl ;
+            send(new_socket , success , strlen(success) , 0 );
+        } else {
+            cout << "Fail Write by " << id << endl;
+            send(new_socket , failed , strlen(failed) , 0 );
+        }
+        return ;
+    } else if (msgType == 5) {
+        // creat new Memory
+        if (memories.count(memoId) == 0) { // Memory Does Not Exist
+            memory a  ;
+            a.memo = "Empty";
+            a.lockedBy = -1 ;
+            a.sheardBy.insert(id);
+            memories[memoId] = a;
+        } else {
+            memories[memoId].sheardBy.insert(id) ;
+        }
+
+
+    } else if (msgType == 6) { // Remove client id from memory clients list
+        memories[memoId].sheardBy.erase(id);
+        if (memories[memoId].sheardBy.size() == 0) {
+            memories.erase(memoId);
+        }
     }
 
 
-   
+
 
 
 }
